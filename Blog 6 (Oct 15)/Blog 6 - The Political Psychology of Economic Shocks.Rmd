@@ -1,5 +1,5 @@
 ---
-title: 'Data Exploration: The Political Psychology of Trump Indictment'
+title: 'Data Exploration: The Political Psychology of Economic Shocks'
 author: "April Zheng"
 date: "October 15, 2025"
 output:
@@ -330,4 +330,5 @@ Hint: The `lm()` function is used to calculate linear regressions in R. [Here](h
 Is the effect of the trade shock on authoritarianism robust to the inclusion of control variables? **Fit a multivariate linear regression controlling for individual-level demographic variables: age, gender, education level, and marriage status. What if you further include controls for other local characteristics such as the percent non-UK born population in respondents' TTWA or percent point increase in the non-UK born population in respondents' TTWA? Present the results in a regression table and comment on your findings. Make sure to comment on the main explanatory variable but also include the substantive interpretations of coefficients for the control variables.** The Ballard-Rosa data have a lot of interesting variables. If you'd like, feel free to explore further with more control variables.
 
 Hint: The \texttt{stargazer} package makes good regression tables; set \texttt{type = 'text'}.
+
 
