@@ -1,0 +1,88 @@
+year,gender,college_stats,rare_disease_prog,rare_disease_cond,linda,cab
+2,Woman,Yes,Program B,die,teller and feminist,0.8
+4+,Woman,Yes,Program A,die,teller and feminist,0.15
+2,Woman,Yes,Program B,die,teller and feminist,0.62
+1,Woman,Yes,Program B,save,teller,0.15
+2,Man,Yes,Program B,die,teller and feminist,0.15
+4+,Woman,Yes,Program A,save,teller and feminist,0.8
+4+,Non-binary,Yes,Program A,save,teller,0.15
+1,Woman,No,Program B,die,teller and feminist,0.82
+2,Woman,No,Program A,die,teller and feminist,0.89
+4+,Man,Yes,Program A,die,teller,0.8
+3,Woman,Yes,Program A,die,teller,0.12
+2,Woman,Yes,Program B,die,teller and feminist,0.12
+3,Man,Yes,Program B,die,teller and feminist,0.7
+4+,Man,Yes,Program A,die,teller,0.48
+2,Man,No,Program A,save,teller,0.41
+2,Woman,Yes,Program A,save,teller and feminist,0.73
+4+,Woman,Yes,Program B,die,teller and feminist,0.74
+4+,Woman,Yes,Program B,die,teller and feminist,0.7
+3,Man,No,Program B,die,teller,0.8
+2,Woman,Yes,Program B,die,teller and feminist,0.15
+1,Man,No,Program B,die,teller and feminist,0.8
+3,Man,No,Program A,save,teller and feminist,0.8
+4+,Man,No,Program B,die,teller and feminist,0.12
+2,Woman,Yes,Program A,save,teller,0.2
+2,Other,No,Program A,die,teller,0.5
+3,Woman,No,Program A,save,teller and feminist,0.2
+3,Man,Yes,Program A,save,teller,0.41
+3,Man,Yes,Program A,die,teller,0.7
+4+,Woman,Yes,Program A,die,teller and feminist,0.74
+2,Man,Yes,Program B,die,teller and feminist,0.7
+4+,Woman,Yes,Program A,die,teller and feminist,0.73
+2,Man,Yes,Program A,die,teller,0.15
+2,Woman,No,Program B,die,teller,0.22
+2,Woman,No,Program B,die,teller and feminist,0.41
+3,Man,Yes,Program A,save,teller,0.15
+3,Woman,Yes,Program B,die,teller and feminist,0.48
+3,Woman,No,Program B,save,teller and feminist,0.15
+2,Woman,Yes,Program A,die,teller and feminist,0.75
+2,Man,No,Program B,die,teller and feminist,0.22
+4+,Man,Yes,Program B,die,teller and feminist,0.8
+4+,Woman,Yes,Program A,save,teller,0.8
+3,Woman,Yes,Program B,die,teller,0.71
+2,Man,No,Program A,die,teller and feminist,0.8
+3,Woman,No,Program B,die,teller and feminist,0.75
+1,Other,No,Program A,die,teller and feminist,0.8
+4+,Woman,Yes,Program A,save,teller,0.8
+1,Man,Yes,Program A,save,teller,0.8
+2,Non-binary,Yes,Program B,die,teller and feminist,0.76
+4+,Woman,Yes,Program B,die,teller,0.8
+1,Woman,No,Program A,save,teller,0.74
+4+,Woman,Yes,Program A,die,teller,0.68
+2,Man,No,Program A,save,teller,0.74
+3,Man,Yes,Program A,save,teller,0.68
+3,Man,Yes,Program A,save,teller,0.22
+1,Man,No,Program A,save,teller,0.8
+4+,Woman,Yes,Program A,save,teller,0.8
+4+,Woman,Yes,Program A,die,teller and feminist,0.15
+4+,Other,Yes,Program B,die,teller and feminist,0.12
+1,Woman,No,Program B,die,teller,0.3
+4+,Woman,Yes,Program B,die,teller and feminist,0.8
+3,Woman,Yes,Program A,save,teller,0.4
+4+,Man,Yes,Program A,save,teller,0.41
+3,Woman,Yes,Program A,save,teller and feminist,0.81
+4+,Woman,Yes,Program A,save,teller,0.75
+2,Man,No,Program A,save,teller and feminist,0.79
+3,Woman,Yes,Program A,save,teller,0.4
+3,Woman,Yes,Program B,die,teller,0.68
+4+,Man,Yes,Program B,die,teller,0.12
+4+,Woman,Yes,Program B,save,teller,0.85
+2,Man,No,Program A,die,teller,0.41
+4+,Woman,No,Program B,die,teller,0.8
+2,Woman,Yes,Program A,save,teller and feminist,0.8
+3,Woman,Yes,Program A,save,teller,0.8
+2,Woman,No,Program A,save,teller and feminist,0.81
+3,Woman,Yes,Program A,save,teller,0.85
+3,Non-binary,Yes,Program A,save,teller,0.15
+4+,Woman,Yes,Program A,save,teller,0.4
+1,Woman,No,Program B,die,teller,0.73
+2,Man,Yes,Program B,die,teller and feminist,0.22
+1,Man,Yes,Program A,save,teller,0.8
+1,Woman,No,Program B,save,teller and feminist,0.68
+2,Woman,No,Program B,die,teller and feminist,0.15
+2,Woman,Yes,Program B,save,teller,0.15
+4+,Man,No,Program B,save,teller and feminist,0.8
+4+,Woman,No,Program A,save,teller and feminist,0.8
+4+,Woman,Yes,Program B,die,teller,0.8
+4+,Woman,Yes,Program A,save,teller,0.76

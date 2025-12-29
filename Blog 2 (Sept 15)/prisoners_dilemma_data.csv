@@ -1,0 +1,16 @@
+﻿player1,player2,score1,score2
+alternator,backstabber,71,291
+alternator,cooperator,400,150
+alternator,prober,253,248
+alternator,titfortat,253,248
+alternator,random,227,224
+backstabber,cooperator,304,294
+backstabber,prober,101,116
+backstabber,titfortat,300,295
+backstabber,random,287,73
+cooperator,prober,6,496
+cooperator,titfortat,300,300
+cooperator,random,151,400
+prober,titfortat,299,299
+prober,random,239,138
+titfortat,random,224,226

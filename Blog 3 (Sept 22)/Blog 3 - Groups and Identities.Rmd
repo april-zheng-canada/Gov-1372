@@ -1,0 +1,99 @@
+---
+title: "Gov 1372 - Groups and Identities"
+author: "April Zheng"
+date: "September 28, 2025"
+output: pdf_document
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(tidyr)
+```
+
+# Marriage and Partisan Polarization
+
+Iyengar and Westwood (2014) use answers to questions about a child marrying an in-party or out-party spouse as one way of characterizing affective partisan polarization. Some authors have questioned if the way this question is framed too coarsely. In particular, [Klar et al. (2018)](https://hollis.harvard.edu/permalink/f/1mdq5o5/TN_cdi_webofscience_primary_000438298500009) argue that, by making the prospective child-in-law's partisanship salient, the marriage question may be picking up on respondents dislike of partisanship in general, rather than a dislike of the opposing party.
+
+The in-class survey you took was a partial replication of the Klar et al. (2018) study. We randomized whether you were asked about a prospective child-in-law who "frequently talks about politics," "rarely talks about politics," or a person whose frequency of discussing politics was not mentioned. This last, control, condition matches the wording of the question used in Iyengar and Westwood (2014). 
+
+**Data Details:**
+
+* File Name: \texttt{Sep22ClassData\_clean.csv}
+
+* Source: These data are from the survey you took in class. The questions are slightly adapted versions of some of the questions used in Klar et al (2018) (see [here](https://hollis.harvard.edu/permalink/f/1mdq5o5/TN_cdi_webofscience_primary_000438298500009) for the supplemental material of that study with the original questionnaire, if you are interested).
+
+Variable Name         | Variable Description
+--------------------- | --------------------------------------
+\texttt{pid3}         | Political party preference
+\texttt{pid\_lean}       | If a respondent didn't identify with the Democrats or Republicans in \texttt{QID1}, this indicates to which party (or neither) they feel closer
+\texttt{strongGOP}    | Indicator variable for whether the respondent identifies as a Strong Republican
+\texttt{strongDEM}    | Indicator variable for whether the respondent identifies as a Strong Democrat
+\texttt{strongPARTISAN}| Indicator variable for whether the respondent identifies as a strong member of either major party
+\texttt{party}        | Party variable where those who lean toward either major party are counted as identifying with that party
+\texttt{treatment}    | Which treatment condition the respondent was randomly assigned to
+\texttt{marryDemocrat}| The respondent's answer to how happy they would be if their child married a Democrat
+\texttt{marryRepublican}| The respondent's answer to how happy they would be if their child married a Republican
+\texttt{inPartyHappy} | Indicator variable for whether the respondent would be happy if their child married a member of their own party
+\texttt{outPartyUnhappy}| Indicator variable for whether the respondent would be unhappy if their child married a member of the other major party
+\texttt{polarized}    | Indicator variable for whether the respondent was affectively polarized
+
+Once again, the .Rmd version of this file has code you can use to load the data.
+
+```{r faces, include=FALSE}
+# remember to use the correct file name
+marriage_data <- read_csv('Sep22ClassData_clean.csv')
+```
+
+These data are *not* the raw output from the survey you took. In particular, all of the indicator variables are the result of coding decisions and data processing done by the instructors (based on the procedures used in Klar et al. (2018)). For the first few questions, just open up the data and take a look at it (ask us if you need help viewing the data in spreadsheet format in RStudio).
+
+## Question 1
+**How were the \texttt{inPartyHappy} and \texttt{outPartyUnhappy} variables defined (or 'operationalized', in a more technical term)? Does this seem like a reasonable procedure? Do you notice any missing values? Why are they missing? How might the missing data affect researchers' inferences?**
+
+From the clean excel sheet, I noticed that "inPartyHappy" is TRUE if the participant respond with "Very Happy" or "Somewhat happy" about their child's in-party marriage. I noticed that "outPartyUnhappy" is TRUE if the participant respond "very unhappy" or "somewhat unhappy" about their child's out-party marriage. A response of "neither happy nor unhappy" will elicit FALSE for both variables. 
+I noticed that some data were excluded; specifically, participants who were not affiliated with either Democrat or Republican (ie. Independent) did not have data recorded under either "inPartyHappy" or "outPartyUnhappy". This is because without party affiliation, there can be no "out-party" or "in-party" marriage which the researchers in this case are investigating. However, this might implicate the researchers' conclusions by narrowing the scope of the population only to the more extreme ends of the party affiliation spectrum, or in other words, selection bias. The conclusion will overstate the affective polarization in the survey sample by excluding participants who are more neutral in affiliation, and thus the validity of the conclusion will be reduced. 
+
+
+## Question 2
+**How was the \texttt{polarized} variable defined? Is there another way you might consider coding this variable for individual polarization? What would be an advantage and a disadvantage of your alternative approach?**
+
+From the clean excel sheet, I noticed that the "polarized" variable is TRUE when both "inPartyHappy" and "outPartyUnhappy" return TRUE. If one or both of "inPartyHappy" and "outPartyUnhappy" returns FALSE, then the "polarized" variable will also return FALSE. 
+Alternatively, I think more information about the extent of affective polarization can be captured if there were more of a spectrum to situate each participant, rather than simply two categories of polarized or not-polarized. There are 5 options respondents could choose from to describe their happines or unhappines: "very unhappy", "somewhat unhappy", "neither happy nor unhappy", "somewhat happy", "very happy". Each of these options can be recorded as a numerical value from 1 to 5 where 1 is most unhappy, and 5 is most happy. Then "polarized" value can be calculated by finding the numerical difference between "inPartyHappy" and "outPartyHappy". A smaller difference would mean greater affective polarization. This would allow for more information to be captured in the extent of affective polarization exhibited by each participant, leading to more observations and a more detailed conclusion. However, the visualization of the data may be more complex and we would likely need multiple bar graphs to show the data processing. Additionally, this approach faces a similar issue where extent of polarization is still a subjective measure as the options participants were choosing from (ie. happy, unhappy, etc.) required subjective evaluations. 
+
+Now let's take a look at if there are differences in some of the key outcome variables depending on treatment status. Here is an example of how you might make a graph to look at if the rates of unhappiness with a prospective out-party in-law differ depending on the frequency with which they talk about politics.
+
+```{r}
+marriage_data <- read_csv('Sep22ClassData_clean.csv')
+
+ggplot(data = marriage_data |> filter(is.na(outPartyUnhappy)==FALSE)) + 
+  geom_bar(mapping = aes(x = outPartyUnhappy, y = after_stat(prop), group = 1), stat = "count") + 
+  facet_wrap(~treatment) + ylab("Proportion") + xlab("Unhappy with Out-Party Marriage")
+```
+
+## Question 3
+**Comment on what you see in the example graph. Did the treatment affect unhappiness with a prospective out-party member coming into the family?**
+
+In the above graph, I notice that across control and treatment groups, around 60% of participants were unhappy with out-party marriage. Relative to the control group, the "Frequently" group has a higher proportion of unhappiness at around 66% while the "Rarely" group has a lower proportion of unhappiness at around 57%. The frequency of political discussion (the treatment variable) by the out-party partner was positively correlated with the child's parent's unhappiness. Higher frequency predicted stronger unhappiness than the control, while lower frequency or none predicted less unhappiness than the control. 
+
+
+## Question 4
+**Did the different treatment conditions affect the proportions of people who were affectively polarized? Make a plot and explain what you found.**
+
+```{r}
+ggplot(data = marriage_data |>
+  filter(is.na(polarized)==FALSE)) +                 #filter marriage_data,remove rows where "polarized" = NA value 
+
+  geom_bar(mapping = aes(x = polarized,              #geom_bar = bar chart
+                         y = after_stat(prop),       #calculates proportion of each category 
+                         group = 1),
+           stat = "count") +
+  facet_wrap(~treatment) +                           #creates three side-by-side bar charts
+  ylab("Proportion") +                               #labels for x and y axis
+  xlab("Affectively Polarized")
+
+```
+Yes, from the graph, the treatment conditions did impact the proportion of people affectively polarized. While the control group showed that more participants were affectively polarized at around 60%, the treatment groups both exhibited much lower affective polarization proportion. The "Frequently" Group showed roughly 33% affective polarization in the sample population, and the "Rarely" Group showed roughly 21% affective polarization in the sample population. 
+The reasoning for this will be in the blog. 
