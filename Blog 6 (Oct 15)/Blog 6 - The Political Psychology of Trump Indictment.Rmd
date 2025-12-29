@@ -1,0 +1,333 @@
+---
+title: 'Data Exploration: The Political Psychology of Trump Indictment'
+author: "April Zheng"
+date: "October 15, 2025"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(estimatr)
+select <- dplyr::select
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(readr) # read_csv
+library(ggplot2) # ggplot
+library(tidyr)
+library(gridExtra) # grid.arrange
+library(psych) #fa.parallel
+library(ggpubr)
+```
+
+In this Data Exploration assignment, we will be working with the replication data from Ballard-Rosa et al (2021). The actionable part of each question is **bolded**.
+
+Ballard-Rosa et al (2021) asks whether *authoritarianism* is a stable characteristic of a person, developed during early socialization and fixed throughout adulthood, or an attitude that can arise contemporaneously in reaction to economic threats, with an idea that economic threats can activate a frustration-aggression mechanism. The replication data combines their original survey of 1913 British people in 2017 with the economic characteristics of respondents' local communities. Note that the community characteristics are at the "Travel to Work Area (TTWA)" level, similar to commuting zones in the U.S.
+
+**Data Details:**
+
+* File Name: \texttt{ballard\_rosa.dta}
+
+* Source: [Ballard-Rosa et al (2021)](https://hollis.harvard.edu/permalink/f/1mdq5o5/TN_cdi_crossref_primary_10_1177_00104140211024296); This file is a rearranged version of [their replication data at Harvard Dataverse](https://dataverse.harvard.edu/dataset.xhtml;jsessionid=ddecf1fbbdac46267dbf63c4bcfe?persistentId=doi%3A10.7910%2FDVN%2FJNNGLC&version=&q=&fileTypeGroupFacet=%22Image%22&fileAccess=&fileSortField=size). Below are select variables in the data:
+
+Variable Name         | Variable Description
+--------------------- | --------------------------------------
+\texttt{caseid}         | Unique respondent ID
+\texttt{...} | See below for variables measuring authoritarianism. 
+\texttt{age}     | Age
+\texttt{female}     | Binary variable for gender
+\texttt{universityEduc}  | Binary variable for university education
+\texttt{higherCert}  | Binary variable for higher certification
+\texttt{isMarried}  | Binary variable for whether married
+\texttt{pcnuk2015}  | % non-UK born in R's Travel to Work Area
+\texttt{chg\_immig}  | Percent point increase in % non-UK born in R's TTWA
+\texttt{ipw\_1991\_2007\_weighted}  | A measure of local labor market exposure to Chinese import competition, exposure in R's TTWA
+\texttt{...} | Other variables in the survey. See survey\_codebook.pdf
+
+
+```{r}
+#Load the data 
+df <- read_csv("ballard_rosa.csv")
+```
+
+*Authoritarianism* is measured in the 18 columns to the right of the `caseid` column. The authors define *authoritarian values* as ``individual preference for order and conformity and belief that these value outcomes should be achieved by force if necessary". The authors view authoritarianism as a concept comprised of three separate sub-dimensions: authoritarian aggression, submission, and conventionalism. Each dimension is measured with 6 questions below. Respondents answered how much they agree with each statement at a five-point scale from 'strongly agree' to 'strongly disagree'.
+
+*Authoritarian Aggression*:
+
+- Strong force is necessary against threatening groups.
+- It is necessary to use force against people who are a threat to authority.
+- Police should avoid using violence against suspects.*
+- People should avoid using violence against others even when ordered to do so by the proper authorities.*
+- Using force against people is wrong even if done so by those in authority.*
+- Strong punishments are necessary in order to send a message.
+
+*Authoritarian Submission*:
+
+- We should believe what our leaders tell us.
+- Our leaders know what is best for us.
+- People should be critical of statements made by those in positions of authority.*
+- People in positions of authority generally tell the truth.
+- People should be skeptical of all statements made by those in positions of authority.*
+- Questioning the motives of those in power is healthy for society.*
+
+*Authoritarian Conventionalism*:
+
+- People emphasize tradition too much.*
+- Traditions are the foundation of a healthy society and should be respected.
+- It would be better for society if more people followed social norms.
+- Traditions interfere with progress.*
+- People should challenge social traditions in order to advance society.*
+- People should respect social norms.
+
+Note that * indicates that it is reverse coded in the data.
+
+Then the authors use the average of the 6 questions to construct each `avgAggression`, `avgSubmission`, and `avgConventionalism`. Then, the average of these three are used to construct `asc` (ASC, Aggression-Submission-Conventionalism), which they use as the main measure of authoritarianism.
+
+## Question 1
+
+**What is the distribution of the authoritarian values among respondents? Look at the mean, median, and standard deviation of ASC. Plot the full distribution using geom_density or geom_histogram.**
+```{r}
+#Load the data 
+asc_data <- read_csv("ballard_rosa.csv")
+
+# Calculate mean and standard deviation in the same data frame, which is now called asc_stats 
+#The summarize() function calculates the mean of the sdo5 variable in the sdo_data data frame and assigns it to a new variable called acs_mean
+asc_stats <- asc_data |>
+  summarize(mean_asc = mean(asc),            #this calculates the mean, assigning it to mean_asc variable 
+            std_asc = sd(asc),                #this calculates the standard deviation, assigning it to sd_asc variable 
+            med_asc = median(asc))
+asc_stats
+
+#For ggplot, there's first data frame = dataset, and then aes = x axis. Use geom_histogram to actually draw the histogram. 
+#For ggplot: Need '+' between lines so that each line is attached ggplot object! 
+#be careful of parentheses placement.
+
+ggplot(data = asc_data, aes(x = asc)) + 
+  geom_histogram(bins = 40, fill="lightgreen", color="black") + 
+  labs(title = "Distribution of Authoritarian values among respondents", x = "Aggression-Submission-Conventionalism (ASC)", y = "Count") +
+  
+#Mean line (purple)
+  geom_vline(aes(xintercept = mean_asc), asc_stats, color = "purple", linewidth = 1.25) +
+  
+#Standard deviation lines (blue)
+  geom_vline(aes(xintercept = mean_asc + std_asc), asc_stats, color = "blue", linewidth = 1.25) +
+  geom_vline(aes(xintercept = mean_asc - std_asc), asc_stats, color = "blue", linewidth = 1.25) +
+
+#Median line (green)
+  geom_vline(data = asc_stats, aes(xintercept = med_asc), color = "red", linewidth = 1.25)
+
+```
+```{r}
+asc_data$asc |> range()
+asc_data$asc |> mean(na.rm = T)
+asc_data$asc |> median(na.rm = T)
+asc_data$asc |> sd(na.rm = T) 
+
+```
+```{r}
+#Density Plot
+asc_data <- read_csv("ballard_rosa.csv")
+
+asc_data |>
+  ggplot(aes(x=asc)) +
+  geom_density()
+  geom_vline(xintercept = asc_data$asc |> mean(na.rm = T), col = "red")
+sd.1.plus <- asc_data$asc |> mean(na.rm = T) + asc_data$asc |> sd(na.rm = T)
+sd.1.minus <- asc_data$asc |> mean(na.rm = T) - asc_data$asc |> sd(na.rm = T)
+  geom_vline(xintercept = sd.1.plus, col = "blue")
+  geom_vline(xintercept = sd.1.minus, col = "blue")
+
+
+
+```
+
+## Question 2
+
+**How about the distribution of each of three dimensions? On average, are people likely to agree with the statements above? Are people more likely to agree on some of these questions than others? How do these dimension correlate with each other? Feel free to explore further within each dimension.**
+
+```{r}
+#Load the data 
+df <- read_csv("ballard_rosa.csv")
+
+mean_AA <- mean(df$avgAggression) 
+mean_AS <- mean(df$avgSubmission)
+mean_AC <- mean(df$avgConventionalism)
+
+(plot.agg <- df |>
+    ggplot(aes(x= avgAggression)) +
+    geom_density(col = "red") + 
+    geom_vline(aes(xintercept = mean_AA), color = "purple", linewidth = 1) +     #mean line
+    labs(title = "Distribution of ASC-Aggression"))
+
+(plot.sub <- df |>
+    ggplot(aes(x= avgSubmission)) +
+    geom_density(col = "blue") + 
+    geom_vline(aes(xintercept = mean_AS), color = "purple", linewidth = 1) +     #mean line
+    labs(title = "Distribution of ASC-Submissions"))
+
+(plot.con <- df |>
+    ggplot(aes(x= avgConventionalism)) +
+    geom_density(col = "darkgreen") + 
+    geom_vline(aes(xintercept = mean_AC), color = "purple", linewidth = 1) +     #mean line
+    labs(title = "Distribution of ASC-Conventionalism"))
+
+ggarrange(plot.agg, plot.sub, plot.con, nrow=3, ncol=1)
+```
+```{r}
+#avgAggression: 
+
+asc_data$avgAggression |> mean(na.rm = T)
+asc_data$avgAggression  |> median(na.rm = T)
+asc_data$avgAggression |> sd(na.rm = T) 
+
+#avgSubmission: 
+
+asc_data$avgSubmission |> mean(na.rm = T)
+asc_data$avgSubmission  |> median(na.rm = T)
+asc_data$avgSubmission |> sd(na.rm = T) 
+
+#avgConventionalism: 
+
+asc_data$avgConventionalism |> mean(na.rm = T)
+asc_data$avgConventionalism  |> median(na.rm = T)
+asc_data$avgConventionalism |> sd(na.rm = T) 
+```
+```{r}
+#calculate average:
+ForceNecessaryGroupsThreat <- mean(asc_data$forceNecessaryGroupsThreat, na.rm = TRUE)
+forceNecessaryIndivThreat <- mean(asc_data$forceNecessaryIndivThreat, na.rm = TRUE)
+policeAvoidViolenceREV <- mean(asc_data$policeAvoidViolenceREV, na.rm = TRUE)
+peopleAvoidViolenceREV <- mean(asc_data$peopleAvoidViolenceREV, na.rm = TRUE)
+forceIsWrongREV <- mean(asc_data$forceIsWrongREV, na.rm = TRUE)
+strongPunishmentsNecessary <- mean(asc_data$strongPunishmentsNecessary, na.rm = TRUE)
+
+#combine into a named vector
+Mean_Score <- c(
+  ForceNecessaryGroupsThreat = ForceNecessaryGroupsThreat,
+  ForceNecessaryIndivThreat = forceNecessaryIndivThreat,
+  PoliceAvoidViolenceREV = policeAvoidViolenceREV,
+  PeopleAvoidViolenceREV = peopleAvoidViolenceREV,
+  ForceIsWrongREV = forceIsWrongREV,
+  StrongPunishmentsNecessary = strongPunishmentsNecessary
+)
+
+#sort by mean score 
+sorted_values <- sort(Mean_Score, decreasing = TRUE)
+
+#margin space
+par(mar = c(5, 10.3, 4, 2))  # bottom, left, top, right
+
+(barplot(sorted_values,
+        horiz = TRUE,               # horizontal bars
+        las = 1,                    # horizontal labels
+        cex.names = 0.8,            # smaller label text
+        col = "darkred", 
+        main = "Authoritarian Aggression Questions: Average Aggreement",
+        xlab = "Average Score",
+        xlim = c(0, 5)))
+
+#Submission questions: 
+believeLeaders <- asc_data$believeLeaders |> mean(na.rm = T)
+leadersKnowBest <- asc_data$leadersKnowBest |> mean(na.rm = T)
+criticizeAuthoritiesREV <- asc_data$criticizeAuthoritiesREV |> mean(na.rm = T)
+authoritiesTruthful <- asc_data$authoritiesTruthful |> mean(na.rm = T)
+skepticalOfAuthoritiesREV <- asc_data$skepticalOfAuthoritiesREV |> mean(na.rm = T)
+questioningHealthyREV <- asc_data$questioningHealthyREV |> mean(na.rm = T)
+
+# Combine into a named vector
+Mean_Score <- c(
+  BelieveLeaders = believeLeaders, 
+  LeadersKnowBest = leadersKnowBest, 
+  CriticizeAuthoritiesREV = criticizeAuthoritiesREV, 
+  AuthoritiesTruthful = authoritiesTruthful, 
+  SkepticalOfAuthoritiesREV = skepticalOfAuthoritiesREV, 
+  QuestioningHealthyREV = questioningHealthyREV
+)
+
+# Sort by mean score (highest to lowest)
+sorted_values <- sort(Mean_Score, decreasing = TRUE)
+
+# Add left margin space before plotting
+par(mar = c(5, 10.3, 4, 2))  # bottom, left, top, right
+
+(barplot(sorted_values,
+        horiz = TRUE,               # horizontal bars
+        las = 1,                    # horizontal labels
+        cex.names = 0.8,            # smaller label text
+        col = "lightblue",
+        main = "Authoritarian Submission Questions: Average Aggreement",
+        xlab = "Average Score",
+        xlim = c(0, 5)))
+
+#Conventionalism: 
+tooMuchTraditionREV <- asc_data$tooMuchTraditionREV |> mean(na.rm = T)
+traditionsFoundationSociety <- asc_data$traditionsFoundationSociety |> mean(na.rm = T)
+followSocialTraditions <- asc_data$followSocialTraditions |> mean(na.rm = T)
+traditionsInterfereProgressREV <- asc_data$traditionsInterfereProgressREV |> mean(na.rm = T)
+challengeSocialTraditionsREV <- asc_data$challengeSocialTraditionsREV |> mean(na.rm = T)
+respectNorms <- asc_data$respectNorms |> mean(na.rm = T)
+
+# Combine into a named vector
+Mean_Score <- c(
+  TooMuchTraditionREV = tooMuchTraditionREV, 
+  TraditionsFoundationSociety = traditionsFoundationSociety, 
+  FollowSocialTraditions = followSocialTraditions, 
+  TraditionsInterfereProgressREV = traditionsInterfereProgressREV, 
+  ChallengeSocialTraditionsREV = challengeSocialTraditionsREV, 
+  RespectNorms = respectNorms
+)
+
+# Sort by mean score (highest to lowest)
+sorted_values <- sort(Mean_Score, decreasing = TRUE)
+
+# Add left margin space before plotting
+par(mar = c(5, 10.3, 4, 2))  # bottom, left, top, right
+
+barplot(sorted_values,
+        horiz = TRUE,               # horizontal bars
+        las = 1,                    # horizontal labels
+        cex.names = 0.8,            # smaller label text
+        col = "lightgreen",
+        main = "Authoritarian Conventionalism Questions: Average Aggreement",
+        xlab = "Average Score",
+        xlim = c(0, 5))
+
+
+```
+
+
+
+## Question 3
+
+**Do you think these 18 questions measure well the proposed concept of authoritarianism? Does each dimension capture something distinct about authoritarian values? What other questions or experiments could we use to better measure authoritarian attitudes?**
+
+What is your definition of authoritarianism? Is it competitive authoritarianism? 
+
+## Question 4 (Data Science Question)
+
+The authors argue that some localities are more negatively impacted by Chinese import and people in those localities would develop more authoritarian values due to economic frustration. `ipw\_1991\_2007\_weighted` measures how much the local employment of a place depended on industries that were negatively affected by Chinese import. For anyone curious, a detailed explanation on how this variable is constructed can be found in Ballard-Rosa (2021) on pages 2333 and 2334. 
+
+### PART A
+
+**Make a scatterplot to look at the relationship between `ipw_1991_2007_weighted` and the ASC measure of authoritarian attitudes. You can use `geom_point()` for this purpose. Do they seem to correlate with each other? Draw a line that summarizes these points. You can use `geom_smooth()` for this purpose.**
+
+
+### PART B
+**Use single variate linear regression to test the relationship between `ipw_1991_2007_weighted` and the ASC measure of authoritarian attitudes. Interpret the results. Does the local exposure to Chinese trade shock increase authoritarianism?** 
+
+Hint: The `lm()` function is used to calculate linear regressions in R. [Here](https://www.datacamp.com/community/tutorials/linear-regression-R) is a guide to linear regression in R that may be helpful.
+
+## Question 5 (Data Science Question)
+
+Is the effect of the trade shock on authoritarianism robust to the inclusion of control variables? **Fit a multivariate linear regression controlling for individual-level demographic variables: age, gender, education level, and marriage status. What if you further include controls for other local characteristics such as the percent non-UK born population in respondents' TTWA or percent point increase in the non-UK born population in respondents' TTWA? Present the results in a regression table and comment on your findings. Make sure to comment on the main explanatory variable but also include the substantive interpretations of coefficients for the control variables.** The Ballard-Rosa data have a lot of interesting variables. If you'd like, feel free to explore further with more control variables.
+
+Hint: The \texttt{stargazer} package makes good regression tables; set \texttt{type = 'text'}.
+

@@ -1,0 +1,174 @@
+---
+title: "Gov 1372 - Hierarchies"
+author: "April Zheng"
+date: "October 1st, 2025"
+output: pdf_document
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr) # filter(), group_by(), summarize
+library(readr) # read_csv()
+library(ggplot2) # ggplot()
+library(estimatr) # difference_in_means()
+```
+
+# Social Dominance and Politics
+
+Welcome to the fourth Data Exploration Assignment. This week, we read about Social Dominance Theory, and its related psychological construct, Social Dominance Orientation (SDO). SDO is measured through a survey scale consisting of 16 items that we already explored in class. In this assignment, you will explore data on SDO and its relationship with other variables from a nationally representative survey fielded in 2018.
+
+Note that the actionable part of each question is **bolded**. 
+
+**Data Details:**
+
+* File Name: \texttt{sdo\_data.csv}
+
+* Source: These data are condensed and adapted from a [survey](https://wthh.dataforprogress.org/get-the-data) by Data for Progress in 2018 (N = 3144). The data are representative of 2018 voters.
+
+Variable Name         | Variable Description
+--------------------- | --------------------------------------
+\texttt{sdo5}       | Five-point social dominance orientation (SDO) scale: 1. Minimum SDO; ...; 5. Maximum SDO
+\texttt{female}         | Indicator for whether or not the respondent is female. Coded 1 if respondent is female, 0 otherwise.
+\texttt{birthyr}         | Respondent's birth year
+\texttt{educ}        | Education: 1. Didn't graduate HS; 2. HS graduate; 3. Some college; 4. 2-year college; 5. 4-year college; 6. Postgraduate degree
+\texttt{race}  | Race: 1. White; 2. Black or African-American; 3. Hispanic or Latino; 4. Asian or Asian-American; 5. Native American; 6. Mixed Race; 7. Other; 8. Middle Eastern
+\texttt{favor\_trump}    | Favorability of Donald Trump: 1. very unfavorable; ...; 4. very favorable
+\texttt{favor\_blm}    | Favorability of Black Lives Matter: 1. very unfavorable; ...; 4. very favorable
+\texttt{favor\_metoo}        | Favorability of the Me Too movement: 1. very unfavorable; ...; 4. very favorable
+\texttt{american\_customs}       | "The growing number of newcomers from other countries threatens traditional American customs and values": 1. Strongly disagree; ...; 5. Strongly agree
+\texttt{race\_ident}       | "How important is being [respondent's race] to you?": 1. Not at all important; ...; 4. Very important
+\texttt{pid3}       | Three-category party identification: 1. Democrat; 2. Independent; 3. Republican
+\texttt{ideo5}       | Five-category political ideology: 1. Very liberal; ...; 5. Very conservative
+\texttt{fear\_of\_demographic\_change}       | Fear of demographic change in the US: 0. Least fearful; ...; 1. Most fearful
+\texttt{confederate\_flag}       | Is the Confederate flag mostly a symbol of slavery and white supremacy or Southern heritage and culture? Coded either "slavery" or "heritage"
+\texttt{presvote16}       | Vote choice in the 2016 presidential election
+
+## Question 1: REQUIRED
+
+Before looking at data, the science of political psychology often involves building surveys. The teaching team builds the surveys you take using an online survey-building software called Qualtrics. This is often the same software that researchers use to build surveys and collect data that is eventually published in peer-reviewed journals. In this question, you'll create your own brief survey. 
+
+**THIS QUESTION IS REQUIRED FOR ALL STUDENTS. Go to harvard.qualtrics.com and log in using your HarvardKey. Click "Create a new project", then select "Survey". You can name your survey whatever you like. Leave the drop-down options at their default and click "Create project". Now you can input the SDO scale, which is given below. Make sure to include all 16 items, split into two sub-scales, in your survey. They are split into two sub-scales here, but they don't need to be in your survey. For each item, there should be seven response categories: Strongly favor, Somewhat favor, Slightly favor, Neutral, Slightly oppose, Somewhat oppose, Strongly oppose. Think about the format you think is best for these questions, available under "Question Type". How might the format of the questions affect the responses you get from the survey, or the experience respondents have while taking the survey?  Also consider question ordering and how that may also affect the responses. BE SURE TO UPLOAD A SCREENSHOT OF YOUR QUALTRICS SURVEY TO YOUR BLOG THIS WEEK.**
+
+**Dominance Sub-Scale**
+\begin{enumerate}
+  \item Some groups of people must be kept in their place.
+  \item It's probably a good thing that certain groups are at the top and other groups are at the bottom.
+  \item An ideal society requires some groups to be on top and others to be on the bottom.
+  \item Some groups of people are simply inferior to other groups.
+  \item Groups at the bottom are just as deserving as groups at the top. 
+  \item No one group should dominate in society.
+  \item Groups at the bottom should not have to stay in their place.
+  \item Group dominance is a poor principle.
+\end{enumerate}
+
+**Anti-Egalitarianism Sub-Scale**
+\begin{enumerate}
+  \item We should not push for group equality.
+  \item We shouldn't try to guarantee that every group has the same quality of life.
+  \item It is unjust to try to make groups equal.
+  \item Group equality should not be our primary goal.
+  \item We should work to give all groups an equal chance to succeed.
+  \item We should do what we can to equalize conditions for different groups.
+  \item No matter how much effort it takes, we ought to strive to ensure that all groups have the same chance in life.
+  \item Group equality should be our ideal.
+\end{enumerate}
+
+## Question 2
+
+Now let's take a look at the data.
+```{r}
+
+sdo <- read_csv("sdo_data.csv")
+
+```
+
+**What is the distribution of social dominance orientation in the sample? Make a plot, and report the mean and standard deviation of SDO in the sample. Extend this problem by splitting the plot by party ID of the respondent. Comment on what you find.**
+```{r}
+sdo_data <- read.csv("sdo_data.csv")
+
+# Calculate mean and standard deviation in the same data frame, which is now called sdo_stats. 
+#The summarize() function calculates the mean of the sdo5 variable in the sdo_data data frame and assigns it to a new variable called sdo5_mean
+sdo_stats <- sdo_data |>
+  summarize(mean_sdo5 = mean(sdo5),            #this calculates the mean, assigning it to mean_sdo5 variable 
+            std_sdo5 = sd(sdo5))               #this calculates the standard deviation, assigning it to sd_sdo5 variable 
+sdo_stats
+
+#For ggplot, there's first data frame = dataset, and then aes = x axis. Use geom_histogram to actually draw the histogram. 
+#For ggplot: Need '+' between lines so that each line is attached ggplot object! 
+#be careful of parentheses placement.
+
+ggplot(data = sdo_data, aes(x = sdo5)) + 
+  geom_histogram(bins = 17, fill="orange", color="black") + 
+  labs(title = "Distribution of Social Dominance Orientation", x = "SDO-5", y = "Count") +
+  
+#Mean line (purple)
+  geom_vline(aes(xintercept = mean_sdo5), sdo_stats, color = "purple", linewidth = 1.5) +
+  
+#Standard deviation lines (blue)
+  geom_vline(aes(xintercept = mean_sdo5 + std_sdo5), sdo_stats, color = "blue", linewidth = 1.5) +
+  geom_vline(aes(xintercept = mean_sdo5 - std_sdo5), sdo_stats, color = "blue", linewidth = 1.5)
+```
+```{r}
+sdo_data <- read.csv("sdo_data.csv")
+
+sd(sdo_data$sdo5)
+
+mean(sdo_data$sdo5)
+```
+```{r}
+# Set up a side-by-side layout
+par(mfrow=c(1, 3))
+
+# Create three side-by-side histograms - 1. Democrat; 2. Independent; 3. Republican.
+sdo_data <- read.csv("sdo_data.csv")
+
+#filtering out party IDs: 
+democrats <- sdo_data[sdo_data$pid3 == "1", ]
+independents <- sdo_data[sdo_data$pid3 == "2", ]
+republicans <- sdo_data[sdo_data$pid3 == "3", ]
+
+hist(sdo_data$sdo5[sdo_data$pid3 == "1"], 
+     main = "SDO Distribution: Democrats", 
+     xlab = "SDO Score", ylab = "Count", col = "lightblue", breaks = 17)
+
+hist(sdo_data$sdo5[sdo_data$pid3 == "2"], 
+     main = "SDO Distribution: Independents", 
+     xlab = "SDO Score", ylab = "Count", col = "lightgreen", breaks = 17)
+
+hist(sdo_data$sdo5[sdo_data$pid3 == "3"], 
+     main = "SDO Distribution: Republicans", 
+     xlab = "SDO Score", ylab = "Count", col = "lightcoral", breaks = 17)
+
+
+```
+
+```{r}
+sdo_data <- read.csv("sdo_data.csv")
+
+democrat_sdo5_mean <- sdo_data |>
+  filter(pid3 == 1) |>
+  summarize(mean_sdo5 = mean(sdo5, na.rm = TRUE)) |>
+  pull(mean_sdo5)
+
+print(democrat_sdo5_mean)
+
+independent_sdo5_mean <- sdo_data |>
+  filter(pid3 == 2) |>
+  summarize(mean_sdo5 = mean(sdo5, na.rm = TRUE)) |>
+  pull(mean_sdo5)
+
+print(independent_sdo5_mean)
+
+republican_sdo5_mean <- sdo_data |>
+  filter(pid3 == 3) |>
+  summarize(mean_sdo5 = mean(sdo5, na.rm = TRUE)) |>
+  pull(mean_sdo5)
+
+print(republican_sdo5_mean)
+
+```
+
+
+
+
